@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vault4Idea - Save Claude Code Conversations & Never Lose Ideas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: #1f2937;
+            line-height: 1.6;
+            background-color: #ffffff;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: white;
+            border-bottom: 1px solid #f3f4f6;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #5b21b6;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #6b7280;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #5b21b6;
+        }
+
+        .nav-cta {
+            background: #5b21b6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: background 0.3s;
+        }
+
+        .nav-cta:hover {
+            background: #7c3aed;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 6rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #f3f4f6 0%, #fafbfc 100%);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: #111827;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            color: #4b5563;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-cta {
+            display: inline-block;
+            background: #5b21b6;
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hero-cta:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(91, 33, 182, 0.3);
+        }
+
+        /* Problem Section */
+        .problems {
+            padding: 6rem 2rem;
+            background: white;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 4rem;
+            color: #111827;
+        }
+
+        .problems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .problem-card {
+            background: #f9fafb;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            border-left: 4px solid #ef4444;
+        }
+
+        .problem-card h3 {
+            color: #111827;
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+        }
+
+        .problem-card .problem-label {
+            color: #ef4444;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .problem-card p {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        /* Token Math Section */
+        .token-math {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .token-math .section-title {
+            color: white;
+        }
+
+        .math-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .comparison-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .comparison-box h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .comparison-box .cost {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+
+        .comparison-box .tokens {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+
+        .comparison-box ul {
+            list-style: none;
+            font-size: 0.95rem;
+        }
+
+        .comparison-box li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-box li:last-child {
+            border-bottom: none;
+        }
+
+        .savings-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .savings-table th,
+        .savings-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+
+        .savings-table th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+        }
+
+        .savings-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .savings-highlight {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            background: white;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            border-radius: 0.75rem;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: #5b21b6;
+            box-shadow: 0 10px 30px rgba(91, 33, 182, 0.1);
+        }
+
+        .feature-card h4 {
+            color: #5b21b6;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .feature-card p {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 6rem 2rem;
+            background: #f9fafb;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .pricing-card.featured {
+            border-color: #5b21b6;
+            box-shadow: 0 20px 40px rgba(91, 33, 182, 0.15);
+            transform: translateY(-10px);
+        }
+
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-card .price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #5b21b6;
+            margin: 1rem 0;
+        }
+
+        .pricing-card .price span {
+            font-size: 1rem;
+            color: #6b7280;
+            font-weight: 400;
+        }
+
+        .pricing-card ul {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .pricing-card li {
+            padding: 0.75rem 0;
+            color: #6b7280;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 0.95rem;
+        }
+
+        .pricing-card li:before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .pricing-card.featured li:before {
+            color: #5b21b6;
+        }
+
+        .pricing-cta {
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pricing-card.featured .pricing-cta {
+            background: #5b21b6;
+            color: white;
+        }
+
+        .pricing-card.featured .pricing-cta:hover {
+            background: #7c3aed;
+        }
+
+        .pricing-card .pricing-cta {
+            background: #f3f4f6;
+            color: #111827;
+            border: 1px solid #e5e7eb;
+        }
+
+        .pricing-card .pricing-cta:hover {
+            background: #e5e7eb;
+        }
+
+        /* FAQ Section */
+        .faq {
+            padding: 6rem 2rem;
+            background: white;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 2rem;
+        }
+
+        .faq-item h4 {
+            color: #111827;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        .faq-item p {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .cta-section button {
+            background: white;
+            color: #5b21b6;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cta-section button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Footer */
+        footer {
+            background: #111827;
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        footer p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">Idea Vault</a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQ</a>
+            <a href="#waitlist" class="nav-cta">Join Waitlist</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Never lose an idea to context limits again</h1>
+        <p>Save conversations once. Restore them instantly. Save 90% on token costs.</p>
+        <button class="hero-cta" onclick="document.getElementById('waitlist').scrollIntoView({behavior: 'smooth'})">Join the Waitlist</button>
+    </section>
+
+    <!-- Problems Section -->
+    <section class="problems">
+        <h2 class="section-title">You're paying twice for the same ideas</h2>
+        <div class="problems-grid">
+            <div class="problem-card">
+                <div class="problem-label">The Cost of Forgetting</div>
+                <h3>Context Loss is Expensive</h3>
+                <p>You're 30K tokens into a Claude Code session. A brilliant idea pops up early. Context fills up. You manually recap: 2,000+ tokens wasted. You do this 2-3x per week. <strong>Cost: $20-40/month in wasted tokens.</strong></p>
+            </div>
+            <div class="problem-card">
+                <div class="problem-label">Current Workarounds</div>
+                <h3>Existing Solutions Don't Work</h3>
+                <p><code>/export</code> scatters files. <code>CLAUDE.md</code> bloats context. Copy-paste to Notion costs full tokens. <strong>Result: You're paying full price to recover what you already paid for.</strong></p>
+            </div>
+            <div class="problem-card">
+                <div class="problem-label">Lost Competitive Advantage</div>
+                <h3>Every Context Loss Kills Momentum</h3>
+                <p>Ideas don't get implemented. Team members can't access your thinking. No searchable memory of good ideas. <strong>Result: You're less productive than you could be.</strong></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Token Math Section -->
+    <section class="token-math">
+        <div class="math-container">
+            <h2 class="section-title">The Math That Makes This a No-Brainer</h2>
+
+            <div class="comparison">
+                <div class="comparison-box">
+                    <h4>❌ Manual Recap (Your Current Way)</h4>
+                    <div class="cost">$0.10</div>
+                    <div class="tokens">per recovery</div>
+                    <ul>
+                        <li>Original conversation: 10,000 tokens</li>
+                        <li>Manual recap: 2,000 tokens</li>
+                        <li>Frequency: 2-3x per week</li>
+                        <li><strong>Annual cost: $20-40</strong></li>
+                    </ul>
+                </div>
+                <div class="comparison-box">
+                    <h4>✅ Idea Vault + Prompt Caching</h4>
+                    <div class="cost">$0.025</div>
+                    <div class="tokens">per recovery (after first save)</div>
+                    <ul>
+                        <li>First save: $0.06 (cache setup)</li>
+                        <li>Subsequent restores: 90% cheaper</li>
+                        <li>Break-even: After 2 restores</li>
+                        <li><strong>Annual cost: $6-10</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 2rem; text-align: center;">Token Savings Over Time</h3>
+            <table class="savings-table">
+                <thead>
+                    <tr>
+                        <th>Timeframe</th>
+                        <th>Manual Recap</th>
+                        <th>Idea Vault</th>
+                        <th class="savings-highlight">Your Savings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1 month (2 recoveries)</td>
+                        <td>$0.20</td>
+                        <td>$0.14</td>
+                        <td class="savings-highlight">Break-even</td>
+                    </tr>
+                    <tr>
+                        <td>3 months (6 recoveries)</td>
+                        <td>$0.60</td>
+                        <td>$0.22</td>
+                        <td class="savings-highlight">$0.38 saved</td>
+                    </tr>
+                    <tr>
+                        <td>6 months (12 recoveries)</td>
+                        <td>$1.20</td>
+                        <td>$0.40</td>
+                        <td class="savings-highlight">$0.80 saved</td>
+                    </tr>
+                    <tr>
+                        <td>1 year (24 recoveries)</td>
+                        <td>$2.40</td>
+                        <td>$0.80</td>
+                        <td class="savings-highlight">$1.60 saved</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2 class="section-title">Everything You Need to Keep Your Ideas</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h4>💾 One-Click Save</h4>
+                <p>Snapshot entire conversations with <code>/vault-save</code>. Automatic backups every 5 messages. Zero friction, zero latency.</p>
+            </div>
+            <div class="feature-card">
+                <h4>⚡ One-Click Restore</h4>
+                <p>Jump back to any saved session with <code>/vault-restore</code>. No manual recapping. Your context is preserved.</p>
+            </div>
+            <div class="feature-card">
+                <h4>🔍 Smart Search</h4>
+                <p>Use <code>/vault-search [query]</code> to find ideas across all sessions. Full-text search. Never lose an idea again.</p>
+            </div>
+            <div class="feature-card">
+                <h4>🌐 Cross-Device Sync (Pro)</h4>
+                <p>Work on MacBook, jump to iPad. Conversations sync in real-time. Cloud backup for peace of mind.</p>
+            </div>
+            <div class="feature-card">
+                <h4>🎯 Session Branching (Pro)</h4>
+                <p>Duplicate a session to explore alternatives. Keep originals untouched. Merge findings back in.</p>
+            </div>
+            <div class="feature-card">
+                <h4>📊 Token Savings Dashboard (Pro)</h4>
+                <p>Visualize cost reduction from prompt caching. Track ideas saved. See your ROI monthly.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <h2 class="section-title">Simple, Transparent Pricing</h2>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3>Starter</h3>
+                <div class="price"><span>Free</span></div>
+                <ul>
+                    <li>Save up to 10 sessions</li>
+                    <li>Local save only</li>
+                    <li>Auto-save every 5 messages</li>
+                    <li>Basic search</li>
+                </ul>
+                <button class="pricing-cta">Try Free</button>
+            </div>
+            <div class="pricing-card featured">
+                <h3>Pro</h3>
+                <div class="price">$12<span>/month</span></div>
+                <ul>
+                    <li>Unlimited cloud saves</li>
+                    <li>Cross-device access</li>
+                    <li>Session branching</li>
+                    <li>Token savings dashboard</li>
+                    <li>Advanced search</li>
+                </ul>
+                <button class="pricing-cta">Join Waitlist - 40% Off</button>
+            </div>
+            <div class="pricing-card">
+                <h3>Team</h3>
+                <div class="price">$29<span>/user/month</span></div>
+                <ul>
+                    <li>Shared team vaults</li>
+                    <li>Collaborative refinement</li>
+                    <li>Audit logs</li>
+                    <li>Admin controls</li>
+                    <li>Everything in Pro</li>
+                </ul>
+                <button class="pricing-cta">Contact Sales</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq" id="faq">
+        <h2 class="section-title">Questions? We Have Answers</h2>
+        <div class="faq-container">
+            <div class="faq-item">
+                <h4>How is this different from /export?</h4>
+                <p>Export gives you files scattered everywhere. Idea Vault keeps everything searchable and indexed. Plus, prompt caching means restored conversations cost 90% less. Export costs full price every time.</p>
+            </div>
+            <div class="faq-item">
+                <h4>What happens to my saves if I stop paying?</h4>
+                <p>Your local saves stay forever. Pro cloud saves are accessible for 30 days after cancellation, then deleted. You can download everything before that.</p>
+            </div>
+            <div class="faq-item">
+                <h4>How does prompt caching actually work?</h4>
+                <p>When you save, we create a cache key. When you restore, Claude's API uses that key instead of reprocessing tokens. You pay 25% extra on first use, then 90% less on restores. It's built into the API—we automate it.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Is my data encrypted?</h4>
+                <p>Yes. Local saves use SQLite on your machine. Cloud syncs are encrypted in transit and at rest via Supabase. We don't see your conversations.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Can I use this offline?</h4>
+                <p>Yes! All saves work offline. Auto-save syncs when you reconnect. Cloud features require internet.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Can I export my data later?</h4>
+                <p>Absolutely. One-click export to JSON, Markdown, or PDF. Your data is always yours.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="waitlist">
+        <h2>Ready to Never Lose an Idea Again?</h2>
+        <p>Join 500+ developers waiting for Idea Vault</p>
+        <p style="font-size: 1rem; margin: 1rem 0; opacity: 0.9;">Founding members get 40% off Pro forever. Limited to 50 spots.</p>
+        <form id="waitlist-form" style="display: flex; max-width: 400px; margin: 2rem auto; gap: 0.5rem;">
+            <input
+                type="email"
+                placeholder="your@email.com"
+                required
+                style="flex: 1; padding: 0.75rem; border: none; border-radius: 0.5rem; font-size: 1rem;"
+            >
+            <button type="submit" style="background: #10b981; color: white; padding: 0.75rem 2rem; border: none; border-radius: 0.5rem; font-size: 1rem; font-weight: 600; cursor: pointer;">Join Now</button>
+        </form>
+        <p style="font-size: 0.85rem; opacity: 0.8; margin-top: 1rem;">No spam. We'll email you when we launch. Early access starts March 2026. Visit us at <strong>vault4idea.com</strong></p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Vault4Idea. Made with ❤️ for Claude Code developers.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem;"><strong>vault4idea.com</strong></p>
+        <p style="margin-top: 1rem;">
+            <a href="#" style="color: #a78bfa; text-decoration: none; margin: 0 1rem;">Privacy</a>
+            <a href="#" style="color: #a78bfa; text-decoration: none; margin: 0 1rem;">Terms</a>
+            <a href="#" style="color: #a78bfa; text-decoration: none; margin: 0 1rem;">Discord</a>
+        </p>
+    </footer>
+
+    <script>
+        // Handle waitlist form
+        document.getElementById('waitlist-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('input[type="email"]').value;
+
+            // For now, just show success message
+            alert(`Thanks for joining! We'll be in touch at ${email}`);
+            this.reset();
+
+            // In production, send to backend or Supabase
+            // Example:
+            // fetch('/api/waitlist', {
+            //     method: 'POST',
+            //     body: JSON.stringify({ email }),
+            //     headers: { 'Content-Type': 'application/json' }
+            // })
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+                    const element = document.querySelector(href);
+                    if (element) {
+                        element.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
